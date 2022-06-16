@@ -1,0 +1,17 @@
+#!/bin/bash
+
+#  This lists the running docker containers, and checks if the specified
+#  container is in the list.
+
+hc_url=your.url.here
+container_name=your_container_name_here
+
+container_status="$( docker ps -a -f name=$container_name | grep $container_name | awk '{print $7}')"
+echo $container_status
+if [ "$container_status" == "Up" ]; then
+    curl -m 10 --retry 5 $hc_url
+elif [ ! $container_status ]; then
+    curl -m 10 --retry 5 --data-raw "Container $container_name does not exist." $hc_url/fail
+else
+    curl -m 10 --retry 5 --data-raw "Container $container_name is not running." $hc_url/fail
+fi
