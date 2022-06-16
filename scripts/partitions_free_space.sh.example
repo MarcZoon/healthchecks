@@ -6,7 +6,7 @@
 hc_url=your.url.here
 pct_limit=90
 
-max_partition_usage=$(df -h | sort -r -k 5 | awk 'FNR == 2 { print $5 }' | grep -o -E '[0-9]+')
+max_partition_usage=$(df -h | grep -v "/snap/" | sort -r -k 5 | awk 'FNR == 2 { print $5 }' | grep -o -E '[0-9]+')
 if [ $max_partition_usage -ge $pct_limit ]; then
     curl -m 10 --retry 5 $hc_url/fail
 else
