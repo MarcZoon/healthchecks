@@ -1,0 +1,8 @@
+#!/bin/bash
+
+#  This script pings the provided healthchecks.io url. The check should
+#  only fail if the system is non-responsive.
+
+hc_url=your.url.here
+
+curl -m 10 --retry 5 $hc_url
