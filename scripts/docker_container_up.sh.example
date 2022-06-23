@@ -9,7 +9,7 @@ declare -a container_names=("your_container_name_here" "another_container")
 down_count=0
 down_array=()
 for container_name in "${container_names[@]}"; do
-    container_status="$( docker ps -a -f name=$container_name | grep $container_name | awk '{print $7}')"
+    container_status="$( docker ps -a -f name=$container_name | grep $container_name | awk '{print $10}')"
     if [ "$container_status" == "Up"; then
         :
     else
@@ -22,7 +22,7 @@ if [ $down_count -gt 0 ]; then
     for val in "${container_names[*]}"; do
         container_str=$val
     done
-    curl -m 10 --retry 5 --data-raw "$down_count are down: $container_str" $hr_url/fail
+    curl -m 10 --retry 5 --data-raw "$down_count are down: $container_str" $hc_url/fail
 else
     curl -m 10 --retry 5 $hc_url
 fi
