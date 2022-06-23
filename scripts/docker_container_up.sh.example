@@ -4,14 +4,25 @@
 #  container is in the list.
 
 hc_url=your.url.here
-container_name=your_container_name_here
+declare -a container_names=("your_container_name_here" "another_container")
 
-container_status="$( docker ps -a -f name=$container_name | grep $container_name | awk '{print $7}')"
-echo $container_status
-if [ "$container_status" == "Up" ]; then
-    curl -m 10 --retry 5 $hc_url
-elif [ ! $container_status ]; then
-    curl -m 10 --retry 5 --data-raw "Container $container_name does not exist." $hc_url/fail
+down_count=0
+down_array=()
+for container_name in "${container_names[@]}"; do
+    container_status="$( docker ps -a -f name=$container_name | grep $container_name | awk '{print $7}')"
+    if [ "$container_status" == "Up"; then
+        :
+    else
+        down_count=$(expr $down_count + 1)
+        down_array+=($container_name)
+    fi
+done
+
+if [ $down_count -gt 0 ]; then
+    for val in "${container_names[*]}"; do
+        container_str=$val
+    done
+    curl -m 10 --retry 5 --data-raw "$down_count are down: $container_str" $hr_url/fail
 else
-    curl -m 10 --retry 5 --data-raw "Container $container_name is not running." $hc_url/fail
+    curl -m 10 --retry 5 $hc_url
 fi
